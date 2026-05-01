@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RFP Tendering Workflow</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9f8f6;
+      --surface: #ffffff;
+      --surface2: #f4f3f0;
+      --border: rgba(0,0,0,0.1);
+      --border-mid: rgba(0,0,0,0.18);
+      --text: #1a1a1a;
+      --text-muted: #666;
+      --text-hint: #999;
+      --accent: #1a1a1a;
+      --accent-fg: #fff;
+      --info-bg: #e8f0fe;
+      --info-fg: #1a56b0;
+      --warn-bg: #fef3cd;
+      --warn-fg: #8a5c00;
+      --ok-bg: #e6f4ea;
+      --ok-fg: #1e7e34;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container { max-width: 760px; margin: 0 auto; }
+
+    header { margin-bottom: 2rem; }
+    header h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: -0.02em; }
+    header p { font-size: 0.875rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Stage nav */
+    .stage-nav {
+      display: flex;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+    }
+    .stage-btn {
+      flex: 1;
+      padding: 11px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      background: var(--surface2);
+      color: var(--text-muted);
+      border: none;
+      border-right: 0.5px solid var(--border);
+      cursor: default;
+      transition: background 0.15s, color 0.15s;
+    }
+    .stage-btn:last-child { border-right: none; }
+    .stage-btn.active { background: var(--surface); color: var(--text); }
+    .stage-btn.done { background: var(--ok-bg); color: var(--ok-fg); }
+    .stage-btn .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--border-mid); color: var(--text-muted);
+      font-size: 10px; margin-right: 6px; vertical-align: middle;
+    }
+    .stage-btn.active .num { background: var(--text); color: var(--surface); }
+    .stage-btn.done .num { background: var(--ok-fg); color: #fff; }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-hint);
+      margin-bottom: 10px;
+    }
+
+    /* Forms */
+    textarea, input[type=text] {
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--surface2);
+      border: 0.5px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    textarea { min-height: 160px; resize: vertical; line-height: 1.6; }
+    textarea:focus, input[type=text]:focus { border-color: var(--text); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 16px;
+      font-size: 13px; font-weight: 500; font-family: inherit;
+      border: 0.5px solid var(--border-mid);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.12s, transform 0.1s;
+    }
+    .btn:hover { background: var(--surface2); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary {
+      background: var(--accent); color: var(--accent-fg);
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { opacity: 0.88; background: var(--accent); }
+
+    /* Panels */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Brief output */
+    .brief-block {
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      font-size: 14px;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      color: var(--text);
+      min-height: 60px;
+    }
+
+    /* Questions */
+    .q-item {
+      padding: 14px 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .q-item:last-child { border-bottom: none; }
+    .q-label { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+    .q-hint { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px; font-weight: 500;
+      padding: 2px 9px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+    .badge-ops { background: var(--info-bg); color: var(--info-fg); }
+    .badge-risk { background: var(--warn-bg); color: var(--warn-fg); }
+    .badge-sched { background: var(--ok-bg); color: var(--ok-fg); }
+
+    /* Estimate */
+    .estimate-section { margin-bottom: 1.25rem; }
+    .estimate-section h4 {
+      font-size: 12px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text-muted);
+      border-bottom: 0.5px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+    .estimate-content { font-size: 14px; line-height: 1.75; white-space: pre-wrap; }
+
+    /* Loading */
+    .loading {
+      display: flex; align-items: center; gap: 10px;
+      padding: 1rem;
+      font-size: 14px; color: var(--text-muted);
+    }
+    .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-hint);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { 0%,80%,100%{opacity:.25} 40%{opacity:1} }
+
+    /* Misc */
+    .row { display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin-top: 10px; }
+    .link-btn {
+      font-size: 12px; color: var(--info-fg);
+      background: none; border: none;
+      cursor: pointer; padding: 4px 0;
+    }
+    .link-btn:hover { text-decoration: underline; }
+    .copy-btn {
+      font-size: 12px; color: var(--text-muted);
+      background: none; border: none; cursor: pointer;
+      padding: 3px 8px; border-radius: var(--radius-sm);
+    }
+    .copy-btn:hover { background: var(--surface2); }
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>RFP Tendering Workflow</h1>
+    <p>AI-assisted brief, operations input, and estimate drafting</p>
+  </header>
+
+  <div class="stage-nav">
+    <div class="stage-btn active" id="nav-1"><span class="num">1</span>RFP Brief</div>
+    <div class="stage-btn" id="nav-2"><span class="num">2</span>Ops Input</div>
+    <div class="stage-btn" id="nav-3"><span class="num">3</span>Estimate Draft</div>
+  </div>
+
+  <!-- STAGE 1 -->
+  <div class="panel active" id="panel-1">
+    <div class="card">
+      <div class="section-label">Paste RFP text or key project details</div>
+      <textarea id="rfp-text" placeholder="Paste the RFP content here — scope, location, client, deadline, quantities, special requirements..."></textarea>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+        <button class="link-btn" onclick="loadSample()">Load sample RFP</button>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="document.getElementById('rfp-text').value=''">Clear</button>
+          <button class="btn btn-primary" id="gen-brief-btn" onclick="generateBrief()">Generate job brief →</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="brief-loading" style="display:none;">
+      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Analysing RFP...</div>
+    </div>
+
+    <div id="brief-result" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="section-label" style="margin:0">Internal job brief</div>
+          <button class="copy-btn" onclick="copyEl('brief-text')">Copy</button>
+        </div>
+        <div class="brief-block" id="brief-text"></div>
+      </div>
+      <div class="row">
+        <button class="btn btn-primary" onclick="goToStage(2)">Continue to ops questions →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 2 -->
+  <div class="panel" id="panel-2">
+    <div id="ops-loading" style="display:none;">
+      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Generating operations questions...</div>
+    </div>
+    <div id="ops-questions" style="display:none;">
+      <div class="card">
+        <div class="section-label">Operations input form</div>
+        <div id="questions-container"></div>
+      </div>
+      <div class="row">
+        <button class="btn btn-primary" onclick="generateEstimate()">Generate estimate draft →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAGE 3 -->
+  <div class="panel" id="panel-3">
+    <div id="est-loading" style="display:none;">
+      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Building estimate from ops input...</div>
+    </div>
+    <div id="estimate-result" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="section-label" style="margin:0">Estimate &amp; proposal draft</div>
+          <button class="copy-btn" onclick="copyEl('estimate-text')">Copy</button>
+        </div>
+        <div id="estimate-text"></div>
+      </div>
+      <div class="row">
+        <button class="btn" onclick="startOver()">Start new RFP</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SAMPLE_RFP = `CLIENT: Fortescue Metals Group
+PROJECT: B-Area Decline Extension — Bulk Earthworks Package
+LOCATION: Cloudbreak Mine Site, Pilbara WA
+SCOPE: Earthworks contractor required for 2.4km decline extension. Includes bulk cut and fill (~180,000 BCM), haul road construction (4.2km), drainage works and compaction to specification.
+DURATION: 14 months (mobilisation Q2 2025)
+SUBMISSION DEADLINE: 15 March 2025
+SPECIAL REQUIREMENTS: Contractor to provide D10/D11 dozers, 777-class ADTs or equivalent. Indigenous Employment: 20% target. Camp accommodation required for 85 personnel. Dust and noise management plan required. Performance bond 10% of contract value.
+KEY RISKS NOTED IN RFP: Wet season working restrictions (Dec-Feb), underground utility conflicts at chainages 0–400m, hard rock intrusion risk in lower sections.`;
+
+let briefContent = '';
+let questionsData = [];
+let opsAnswers = {};
+let questionsLoaded = false;
+
+const CAT_COLORS = {
+  'Crew & Labour': 'badge-ops',
+  'Plant & Equipment': 'badge-ops',
+  'Production Rates': 'badge-sched',
+  'Schedule & Programme': 'badge-sched',
+  'Subcontractors': 'badge-ops',
+  'Site Conditions': 'badge-risk',
+  'Risks & Assumptions': 'badge-risk',
+  'Margin & Commercials': 'badge-risk',
+};
+
+function loadSample() { document.getElementById('rfp-text').value = SAMPLE_RFP; }
+
+function copyEl(id) {
+  const t = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(t).catch(() => {});
+}
+
+function goToStage(n) {
+  document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === n - 1));
+  document.querySelectorAll('.stage-btn').forEach((b, i) => b.classList.toggle('active', i === n - 1));
+  if (n === 2 && !questionsLoaded) loadOpsQuestions();
+}
+
+function markDone(n) {
+  const b = document.getElementById('nav-' + n);
+  b.classList.remove('active');
+  b.classList.add('done');
+}
+
+function startOver() {
+  briefContent = ''; questionsData = []; opsAnswers = {}; questionsLoaded = false;
+  document.getElementById('rfp-text').value = '';
+  document.getElementById('brief-text').textContent = '';
+  document.getElementById('brief-result').style.display = 'none';
+  document.getElementById('ops-questions').style.display = 'none';
+  document.getElementById('estimate-result').style.display = 'none';
+  document.querySelectorAll('.stage-btn').forEach((b, i) => {
+    b.classList.remove('active', 'done');
+    if (i === 0) b.classList.add('active');
+  });
+  goToStage(1);
+}
+
+async function generateBrief() {
+  const rfp = document.getElementById('rfp-text').value.trim();
+  if (!rfp) return;
+  document.getElementById('gen-brief-btn').disabled = true;
+  document.getElementById('brief-result').style.display = 'none';
+  document.getElementById('brief-loading').style.display = 'block';
+  document.getElementById('brief-text').textContent = '';
+
+  try {
+    const res = await fetch('/api/generate-brief', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rfp_text: rfp }),
+    });
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    document.getElementById('brief-loading').style.display = 'none';
+    document.getElementById('brief-result').style.display = 'block';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      for (const line of chunk.split('\n')) {
+        if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+          try {
+            const d = JSON.parse(line.slice(6));
+            if (d.text) {
+              briefContent += d.text;
+              document.getElementById('brief-text').textContent = briefContent;
+            }
+          } catch {}
+        }
+      }
+    }
+  } catch (e) {
+    document.getElementById('brief-loading').style.display = 'none';
+    alert('Error generating brief. Check your API key and connection.');
+  }
+  document.getElementById('gen-brief-btn').disabled = false;
+}
+
+async function loadOpsQuestions() {
+  questionsLoaded = true;
+  document.getElementById('ops-loading').style.display = 'block';
+  document.getElementById('ops-questions').style.display = 'none';
+
+  try {
+    const res = await fetch('/api/generate-questions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ brief: briefContent }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    questionsData = data.questions;
+    renderQuestions();
+    document.getElementById('ops-loading').style.display = 'none';
+    document.getElementById('ops-questions').style.display = 'block';
+  } catch (e) {
+    document.getElementById('ops-loading').style.display = 'none';
+    document.getElementById('ops-questions').innerHTML = `<p style="color:#c00;padding:1rem;">Error: ${e.message}</p>`;
+    document.getElementById('ops-questions').style.display = 'block';
+  }
+}
+
+function renderQuestions() {
+  const c = document.getElementById('questions-container');
+  c.innerHTML = '';
+  let lastCat = '';
+  questionsData.forEach(q => {
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    const color = CAT_COLORS[q.category] || 'badge-ops';
+    const badge = q.category !== lastCat
+      ? `<div class="badge ${color}">${q.category}</div>`
+      : '';
+    lastCat = q.category;
+    div.innerHTML = `
+      ${badge}
+      <div class="q-label">${q.question}</div>
+      ${q.hint ? `<div class="q-hint">${q.hint}</div>` : ''}
+      <input type="text" placeholder="Ops answer..." id="ans-${q.id}" />
+    `;
+    c.appendChild(div);
+    document.getElementById(`ans-${q.id}`)
+      .addEventListener('input', e => { opsAnswers[q.id] = e.target.value; });
+  });
+}
+
+async function generateEstimate() {
+  questionsData.forEach(q => {
+    const el = document.getElementById(`ans-${q.id}`);
+    if (el) opsAnswers[q.id] = el.value;
+  });
+
+  markDone(1); markDone(2);
+  goToStage(3);
+  document.getElementById('nav-3').classList.add('active');
+  document.getElementById('est-loading').style.display = 'block';
+  document.getElementById('estimate-result').style.display = 'none';
+
+  let estimateText = '';
+
+  try {
+    const res = await fetch('/api/generate-estimate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ brief: briefContent, questions: questionsData, answers: opsAnswers }),
+    });
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    document.getElementById('est-loading').style.display = 'none';
+    document.getElementById('estimate-result').style.display = 'block';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      for (const line of chunk.split('\n')) {
+        if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+          try {
+            const d = JSON.parse(line.slice(6));
+            if (d.text) { estimateText += d.text; renderEstimate(estimateText); }
+          } catch {}
+        }
+      }
+    }
+  } catch (e) {
+    document.getElementById('est-loading').style.display = 'none';
+    alert('Error generating estimate.');
+  }
+}
+
+function renderEstimate(text) {
+  const container = document.getElementById('estimate-text');
+  const lines = text.split('\n');
+  let html = '';
+  let inSection = false;
+  let sectionContent = '';
+
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    const isHeading = trimmed && trimmed === trimmed.toUpperCase()
+      && trimmed.length > 3 && !/[0-9$%]/.test(trimmed.slice(0, 2));
+
+    if (isHeading) {
+      if (inSection) html += `<div class="estimate-content">${escHtml(sectionContent.trim())}</div></div>`;
+      html += `<div class="estimate-section"><h4>${escHtml(trimmed)}</h4>`;
+      sectionContent = '';
+      inSection = true;
+    } else {
+      sectionContent += line + '\n';
+    }
+  });
+
+  if (inSection) html += `<div class="estimate-content">${escHtml(sectionContent.trim())}</div></div>`;
+  if (!html) html = `<div class="estimate-content">${escHtml(text)}</div>`;
+  container.innerHTML = html;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
