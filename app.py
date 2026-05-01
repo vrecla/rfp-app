@@ -1,5 +1,4 @@
 import os
-import re
 import json
 from flask import Flask, render_template, request, jsonify, stream_with_context, Response
 import anthropic
@@ -74,25 +73,11 @@ def generate_questions():
             messages=[{"role": "user", "content": prompt}],
         )
         raw = response.content[0].text
-        # Strip code fences if present
-        clean = re.sub(r'```(?:json)?', '', raw).strip()
-        try:
-            parsed = json.loads(clean)
-        except json.JSONDecodeError:
-            # Try extracting just the JSON array or object
-            match = re.search(r'(\[.*\]|\{.*\})', clean, re.DOTALL)
-            if not match:
-                return jsonify({"error": "No JSON found in AI response", "raw": raw[:500]}), 500
-            parsed = json.loads(match.group(0))
-        # Handle both bare array and wrapped object
-        if isinstance(parsed, list):
-            questions = parsed
-        elif isinstance(parsed, dict):
-            questions = next((v for v in parsed.values() if isinstance(v, list)), None)
-            if questions is None:
-                return jsonify({"error": "Unexpected JSON structure", "raw": raw[:500]}), 500
-        else:
-            return jsonify({"error": "Unexpected response type", "raw": raw[:500]}), 500
+        start = raw.find('[')
+        end = raw.rfind(']')
+        if start == -1 or end == -1:
+            return jsonify({"error": "No JSON array found in AI response", "raw": raw[:500]}), 500
+        questions = json.loads(raw[start:end + 1])
         return jsonify({"questions": questions})
     except json.JSONDecodeError as e:
         return jsonify({"error": f"Failed to parse questions: {e}", "raw": raw[:500]}), 500
