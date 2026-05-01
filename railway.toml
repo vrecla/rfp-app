@@ -2,6 +2,6 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "gunicorn app:app"
+startCommand = "gunicorn app:app --timeout 120 --workers 2"
 healthcheckPath = "/"
 restartPolicyType = "on_failure"

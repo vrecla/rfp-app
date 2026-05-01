@@ -6,7 +6,7 @@ import anthropic
 app = Flask(__name__)
 
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-MODEL = "claude-sonnet-4-20250514"
+MODEL = "claude-sonnet-4-6"
 
 
 @app.route("/")
