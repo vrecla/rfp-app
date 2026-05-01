@@ -1,4 +1,5 @@
 import os
+import re
 import json
 from flask import Flask, render_template, request, jsonify, stream_with_context, Response
 import anthropic
@@ -73,11 +74,13 @@ def generate_questions():
             messages=[{"role": "user", "content": prompt}],
         )
         raw = response.content[0].text
-        clean = raw.replace("```json", "").replace("```", "").strip()
-        questions = json.loads(clean)
+        match = re.search(r'\[.*\]', raw, re.DOTALL)
+        if not match:
+            return jsonify({"error": "No JSON array found in AI response"}), 500
+        questions = json.loads(match.group(0))
         return jsonify({"questions": questions})
-    except json.JSONDecodeError:
-        return jsonify({"error": "Failed to parse questions from AI response"}), 500
+    except json.JSONDecodeError as e:
+        return jsonify({"error": f"Failed to parse questions: {e}"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
