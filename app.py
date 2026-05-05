@@ -22,16 +22,16 @@ def generate_brief():
         return jsonify({"error": "No RFP text provided"}), 400
 
     system = (
-        "You are a senior drilling estimator at Forged Drill Co., a North American drilling contractor "
+        "You are a senior drilling estimator at Forged Drilling, a North American drilling contractor "
         "headquartered in Pilot Butte, Saskatchewan, with offices in San Antonio TX and Denver CO. "
-        "Forged Drill Co. offers: Environmental Drilling, Resource Coring, Hydrogeological Drilling, "
+        "Forged Drilling offers: Environmental Drilling, Resource Coring, Hydrogeological Drilling, "
         "Geotechnical Drilling, Geothermal Drilling, Oil Sands, Pipeline Services, and Dewatering Systems. "
         "Extract key information from RFPs and produce concise internal job briefs. "
         "Identify the applicable drilling discipline(s) and focus on rig requirements, metreage, "
         "hole specifications, formation context, safety requirements, and commercial terms. "
         "Be factual and structured. Use plain text only, no markdown symbols."
     )
-    prompt = f"""From this RFP, produce a structured internal job brief for Forged Drill Co. with these sections:
+    prompt = f"""From this RFP, produce a structured internal job brief for Forged Drilling with these sections:
 PROJECT OVERVIEW, CLIENT, LOCATION, DRILLING DISCIPLINE (which Forged service applies), SCOPE SUMMARY,
 RIG REQUIREMENTS, KEY QUANTITIES (metres / hole count / diameters / depths), DURATION & PROGRAMME,
 SUBMISSION DEADLINE, MOBILISATION REQUIREMENTS, SAFETY & REGULATORY REQUIREMENTS, SPECIAL REQUIREMENTS,
@@ -62,15 +62,15 @@ def generate_questions():
         return jsonify({"error": "No brief provided"}), 400
 
     system = (
-        "You are a drilling operations manager at Forged Drill Co., a North American drilling contractor "
+        "You are a drilling operations manager at Forged Drilling, a North American drilling contractor "
         "offering Environmental Drilling, Resource Coring, Hydrogeological Drilling, Geotechnical Drilling, "
         "Geothermal Drilling, Oil Sands, Pipeline Services, and Dewatering Systems. "
         "Generate targeted questions for the operations team to answer so the estimator can build a cost and proposal. "
         "Tailor questions to the specific drilling discipline identified in the brief. "
         "Always include safety and HSE compliance questions — safety is Forged Drill Co.'s core value. "
         "Return ONLY a JSON array, no markdown, no preamble. "
-        'Each item: {"id":"q1","category":"Crew & Personnel","question":"Full question text",'
-        '"hint":"Brief guidance for ops","type":"text"}. '
+        'Each item: {"id":"q1","category":"Crew & Personnel","question":"question text","hint":"guidance text","type":"text"}. '
+        "Keep every question under 25 words and every hint under 15 words — be direct, not verbose. "
         "Categories: Crew & Personnel, Rig Selection & Equipment, Drilling Programme, "
         "Production Rates, Schedule & Mobilisation, Formation & Ground Conditions, "
         "Fluids & Consumables, Health Safety & Environment, Subcontractors & Suppliers, "
@@ -81,7 +81,7 @@ def generate_questions():
     try:
         response = client.messages.create(
             model=MODEL,
-            max_tokens=2500,
+            max_tokens=4000,
             system=system,
             messages=[{"role": "user", "content": prompt}],
         )
@@ -114,16 +114,16 @@ def generate_estimate():
     )
 
     system = (
-        "You are a senior drilling estimator at Forged Drill Co., a North American drilling contractor "
+        "You are a senior drilling estimator at Forged Drilling, a North American drilling contractor "
         "offering Environmental Drilling, Resource Coring, Hydrogeological Drilling, Geotechnical Drilling, "
         "Geothermal Drilling, Oil Sands, Pipeline Services, and Dewatering Systems. "
         "Produce a structured cost estimate and proposal outline in plain text only — "
         "no markdown symbols, just clear section headings in CAPS. "
         "Use drilling industry terminology appropriate to the discipline. "
-        "Always include a safety and compliance cost line — safety is Forged Drill Co.'s core value ('Forged in Safety'). "
+        "Always include a safety and compliance cost line — safety is Forged Drilling's core value ('Forged in Safety'). "
         "Be specific with numbers where ops data allows; flag gaps clearly."
     )
-    prompt = f"""Using this job brief and operations team input, produce a draft drilling estimate and proposal outline for Forged Drill Co.
+    prompt = f"""Using this job brief and operations team input, produce a draft drilling estimate and proposal outline for Forged Drilling.
 
 JOB BRIEF:
 {brief}
