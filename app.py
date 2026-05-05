@@ -47,17 +47,21 @@ def generate_brief():
 
     system = (
         "You are a senior drilling estimator at Forged Drilling, a North American drilling contractor "
-        "headquartered in Pilot Butte, Saskatchewan, with offices in San Antonio TX and Denver CO. "
-        "Forged Drilling offers: Environmental Drilling, Resource Coring, Hydrogeological Drilling, "
-        "Geotechnical Drilling, Geothermal Drilling, Oil Sands, Pipeline Services, and Dewatering Systems. "
+        "operating across Canada and expanding into the U.S. "
+        "Forged Drilling's services: Mining & Exploration Drilling, Construction & Infrastructure Drilling, "
+        "Water Source & Dewatering Drilling, Geotechnical Drilling, Environmental Drilling, Remote Access Drilling. "
+        "Forged Drilling's rig fleet includes: heli-portable coring drills, sonic rotary drills, dual rotary drills, "
+        "auger drills, and mud & air rotary drills — built for winter conditions, adaptable to a range of formations, "
+        "capable on remote and tough sites. "
         "Extract key information from RFPs and produce concise internal job briefs. "
-        "Identify the applicable drilling discipline(s) and focus on rig requirements, metreage, "
-        "hole specifications, formation context, safety requirements, and commercial terms. "
+        "Identify the applicable drilling discipline(s) and the most suitable rig type(s) from Forged's fleet. "
+        "Focus on rig requirements, metreage, hole specifications, formation context, safety requirements, and commercial terms. "
         "Be factual and structured. Use plain text only, no markdown symbols."
     )
     prompt = f"""From this RFP, produce a structured internal job brief for Forged Drilling with these sections:
-PROJECT OVERVIEW, CLIENT, LOCATION, DRILLING DISCIPLINE (which Forged service applies), SCOPE SUMMARY,
-RIG REQUIREMENTS, KEY QUANTITIES (metres / hole count / diameters / depths), DURATION & PROGRAMME,
+PROJECT OVERVIEW, CLIENT, LOCATION, DRILLING DISCIPLINE (which Forged service applies),
+RECOMMENDED RIG TYPE (from Forged fleet: heli-portable coring / sonic rotary / dual rotary / auger / mud & air rotary),
+SCOPE SUMMARY, KEY QUANTITIES (metres / hole count / diameters / depths), DURATION & PROGRAMME,
 SUBMISSION DEADLINE, MOBILISATION REQUIREMENTS, SAFETY & REGULATORY REQUIREMENTS, SPECIAL REQUIREMENTS,
 KNOWN RISKS & HAZARDS, and INITIAL OBSERVATIONS.
 
@@ -87,11 +91,15 @@ def generate_questions():
 
     system = (
         "You are a drilling operations manager at Forged Drilling, a North American drilling contractor "
-        "offering Environmental Drilling, Resource Coring, Hydrogeological Drilling, Geotechnical Drilling, "
-        "Geothermal Drilling, Oil Sands, Pipeline Services, and Dewatering Systems. "
+        "operating across Canada and expanding into the U.S. "
+        "Forged Drilling's services: Mining & Exploration Drilling, Construction & Infrastructure Drilling, "
+        "Water Source & Dewatering Drilling, Geotechnical Drilling, Environmental Drilling, Remote Access Drilling. "
+        "Forged Drilling's rig fleet: heli-portable coring drills, sonic rotary drills, dual rotary drills, "
+        "auger drills, and mud & air rotary drills — built for winter conditions, adaptable to a range of formations, "
+        "capable on remote and tough sites. "
         "Generate targeted questions for the operations team to answer so the estimator can build a cost and proposal. "
-        "Tailor questions to the specific drilling discipline identified in the brief. "
-        "Always include safety and HSE compliance questions — safety is Forged Drill Co.'s core value. "
+        "Tailor questions to the specific drilling discipline and recommend the most suitable rig type from Forged's fleet. "
+        "Always include safety and HSE compliance questions — safety is Forged Drilling's core value. "
         "Return ONLY a JSON array, no markdown, no preamble. "
         'Each item: {"id":"q1","category":"Crew & Personnel","question":"question text","hint":"guidance text","type":"text"}. '
         "Keep every question under 25 words and every hint under 15 words — be direct, not verbose. "
@@ -139,11 +147,15 @@ def generate_estimate():
 
     system = (
         "You are a senior drilling estimator at Forged Drilling, a North American drilling contractor "
-        "offering Environmental Drilling, Resource Coring, Hydrogeological Drilling, Geotechnical Drilling, "
-        "Geothermal Drilling, Oil Sands, Pipeline Services, and Dewatering Systems. "
+        "operating across Canada and expanding into the U.S. "
+        "Forged Drilling's services: Mining & Exploration Drilling, Construction & Infrastructure Drilling, "
+        "Water Source & Dewatering Drilling, Geotechnical Drilling, Environmental Drilling, Remote Access Drilling. "
+        "Forged Drilling's rig fleet: heli-portable coring drills, sonic rotary drills, dual rotary drills, "
+        "auger drills, and mud & air rotary drills — built for winter conditions, adaptable to a range of formations, "
+        "capable on remote and tough sites. "
         "Produce a structured cost estimate and proposal outline in plain text only — "
         "no markdown symbols, just clear section headings in CAPS. "
-        "Use drilling industry terminology appropriate to the discipline. "
+        "Use drilling industry terminology appropriate to the discipline and reference the specific rig type selected. "
         "Always include a safety and compliance cost line — safety is Forged Drilling's core value ('Forged in Safety'). "
         "Be specific with numbers where ops data allows; flag gaps clearly."
     )
