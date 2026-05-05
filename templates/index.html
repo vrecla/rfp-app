@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RFP Tendering Workflow</title>
+  <title>Forged Drilling — RFP Tendering Workflow</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -218,8 +218,8 @@
 <div class="container">
 
   <header>
-    <h1>RFP Tendering Workflow</h1>
-    <p>AI-assisted brief, operations input, and estimate drafting</p>
+    <h1>Forged Drilling — RFP Tendering Workflow</h1>
+    <p>AI-assisted job brief, operations input, and drilling cost estimate</p>
   </header>
 
   <div class="stage-nav">
@@ -232,7 +232,7 @@
   <div class="panel active" id="panel-1">
     <div class="card">
       <div class="section-label">Paste RFP text or key project details</div>
-      <textarea id="rfp-text" placeholder="Paste the RFP content here — scope, location, client, deadline, quantities, special requirements..."></textarea>
+      <textarea id="rfp-text" placeholder="Paste the RFP content here — drilling scope, location, client, rig requirements, metreage, hole specifications, submission deadline..."></textarea>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
         <button class="link-btn" onclick="loadSample()">Load sample RFP</button>
         <div style="display:flex; gap:8px;">
@@ -243,7 +243,7 @@
     </div>
 
     <div id="brief-loading" style="display:none;">
-      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Analysing RFP...</div>
+      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Analysing RFP and building job brief...</div>
     </div>
 
     <div id="brief-result" style="display:none;">
@@ -263,7 +263,7 @@
   <!-- STAGE 2 -->
   <div class="panel" id="panel-2">
     <div id="ops-loading" style="display:none;">
-      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Generating operations questions...</div>
+      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Generating drilling operations questions...</div>
     </div>
     <div id="ops-questions" style="display:none;">
       <div class="card">
@@ -279,12 +279,12 @@
   <!-- STAGE 3 -->
   <div class="panel" id="panel-3">
     <div id="est-loading" style="display:none;">
-      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Building estimate from ops input...</div>
+      <div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div> Building drilling estimate from ops input...</div>
     </div>
     <div id="estimate-result" style="display:none;">
       <div class="card">
         <div class="card-header">
-          <div class="section-label" style="margin:0">Estimate &amp; proposal draft</div>
+          <div class="section-label" style="margin:0">Drilling estimate &amp; proposal draft</div>
           <button class="copy-btn" onclick="copyEl('estimate-text')">Copy</button>
         </div>
         <div id="estimate-text"></div>
@@ -298,14 +298,14 @@
 </div>
 
 <script>
-const SAMPLE_RFP = `CLIENT: Fortescue Metals Group
-PROJECT: B-Area Decline Extension — Bulk Earthworks Package
-LOCATION: Cloudbreak Mine Site, Pilbara WA
-SCOPE: Earthworks contractor required for 2.4km decline extension. Includes bulk cut and fill (~180,000 BCM), haul road construction (4.2km), drainage works and compaction to specification.
-DURATION: 14 months (mobilisation Q2 2025)
-SUBMISSION DEADLINE: 15 March 2025
-SPECIAL REQUIREMENTS: Contractor to provide D10/D11 dozers, 777-class ADTs or equivalent. Indigenous Employment: 20% target. Camp accommodation required for 85 personnel. Dust and noise management plan required. Performance bond 10% of contract value.
-KEY RISKS NOTED IN RFP: Wet season working restrictions (Dec-Feb), underground utility conflicts at chainages 0–400m, hard rock intrusion risk in lower sections.`;
+const SAMPLE_RFP = `CLIENT: Sandfire Resources NL
+PROJECT: Monty Copper-Gold — Phase 4 RC & Diamond Drilling Programme
+LOCATION: Telfer Region, East Pilbara, Western Australia
+SCOPE: Drilling contractor required to complete a 6,200m RC and 1,800m diamond core drilling programme across 62 RC holes (avg 100m depth) and 9 diamond holes (avg 200m depth, HQ/NQ). Programme targets JORC resource extension and geotechnical data collection for feasibility study.
+DURATION: 12 weeks (mobilisation Q3 2025)
+SUBMISSION DEADLINE: 10 June 2025
+SPECIAL REQUIREMENTS: RC rig capable of 140m at 5.5\" face sampling hammer; diamond rig with HQ3/NQ3 triple tube capability. Client to provide on-site geologist; contractor to supply drillers, offsiders, and field supervisor. All RC chips logged at 1m intervals and bagged. Core to be oriented, boxed, and photographed on-site. Water supply and management plan required. Indigenous Land Use Agreement (ILUA) conditions apply — Heritage monitor required during drilling.
+KEY RISKS NOTED IN RFP: Hard BIF and chert formation below 60m; remote site access (120km unsealed), accommodation and camp logistics for 12 personnel; potential wet season extension; downhole deviation risk in steeply dipping mineralisation.`;
 
 let briefContent = '';
 let questionsData = [];
@@ -313,12 +313,14 @@ let opsAnswers = {};
 let questionsLoaded = false;
 
 const CAT_COLORS = {
-  'Crew & Labour': 'badge-ops',
-  'Plant & Equipment': 'badge-ops',
+  'Crew & Personnel': 'badge-ops',
+  'Rig Selection & Equipment': 'badge-ops',
+  'Drilling Programme': 'badge-sched',
   'Production Rates': 'badge-sched',
-  'Schedule & Programme': 'badge-sched',
-  'Subcontractors': 'badge-ops',
-  'Site Conditions': 'badge-risk',
+  'Schedule & Mobilisation': 'badge-sched',
+  'Formation & Ground Conditions': 'badge-risk',
+  'Fluids & Consumables': 'badge-ops',
+  'Subcontractors & Suppliers': 'badge-ops',
   'Risks & Assumptions': 'badge-risk',
   'Margin & Commercials': 'badge-risk',
 };
