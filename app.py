@@ -58,7 +58,7 @@ def generate_brief():
         "Focus on rig requirements, metreage, hole specifications, formation context, safety requirements, and commercial terms. "
         "Be factual and structured. Use plain text only, no markdown symbols."
     )
-    prompt = f"""From this RFP, produce a structured internal job brief for Forged Drilling with these sections:
+    prompt = f"""From this RFP, produce a structured short internal job brief for Forged Drilling with these sections:
 PROJECT OVERVIEW, CLIENT, LOCATION, DRILLING DISCIPLINE (which Forged service applies),
 RECOMMENDED RIG TYPE (from Forged fleet: heli-portable coring / sonic rotary / dual rotary / auger / mud & air rotary),
 SCOPE SUMMARY, KEY QUANTITIES (metres / hole count / diameters / depths), DURATION & PROGRAMME,
