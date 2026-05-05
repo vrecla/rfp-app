@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Forged Drilling — RFP Tendering Workflow</title>
+  <title>Forged Drill Co. — RFP Tendering Workflow</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -218,8 +218,8 @@
 <div class="container">
 
   <header>
-    <h1>Forged Drilling — RFP Tendering Workflow</h1>
-    <p>AI-assisted job brief, operations input, and drilling cost estimate</p>
+    <h1>Forged Drill Co. — RFP Tendering Workflow</h1>
+    <p>AI-assisted job brief, operations input, and drilling cost estimate &nbsp;·&nbsp; Forged in Safety</p>
   </header>
 
   <div class="stage-nav">
@@ -232,7 +232,7 @@
   <div class="panel active" id="panel-1">
     <div class="card">
       <div class="section-label">Paste RFP text or key project details</div>
-      <textarea id="rfp-text" placeholder="Paste the RFP content here — drilling scope, location, client, rig requirements, metreage, hole specifications, submission deadline..."></textarea>
+      <textarea id="rfp-text" placeholder="Paste the RFP content here — drilling scope, location, client, discipline (environmental, geotechnical, resource coring, hydrogeo, oil sands, pipeline, geothermal, dewatering), rig requirements, metreage, hole specifications, submission deadline..."></textarea>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
         <button class="link-btn" onclick="loadSample()">Load sample RFP</button>
         <div style="display:flex; gap:8px;">
@@ -284,7 +284,7 @@
     <div id="estimate-result" style="display:none;">
       <div class="card">
         <div class="card-header">
-          <div class="section-label" style="margin:0">Drilling estimate &amp; proposal draft</div>
+          <div class="section-label" style="margin:0">Forged Drill Co. — estimate &amp; proposal draft</div>
           <button class="copy-btn" onclick="copyEl('estimate-text')">Copy</button>
         </div>
         <div id="estimate-text"></div>
@@ -298,14 +298,14 @@
 </div>
 
 <script>
-const SAMPLE_RFP = `CLIENT: Sandfire Resources NL
-PROJECT: Monty Copper-Gold — Phase 4 RC & Diamond Drilling Programme
-LOCATION: Telfer Region, East Pilbara, Western Australia
-SCOPE: Drilling contractor required to complete a 6,200m RC and 1,800m diamond core drilling programme across 62 RC holes (avg 100m depth) and 9 diamond holes (avg 200m depth, HQ/NQ). Programme targets JORC resource extension and geotechnical data collection for feasibility study.
-DURATION: 12 weeks (mobilisation Q3 2025)
-SUBMISSION DEADLINE: 10 June 2025
-SPECIAL REQUIREMENTS: RC rig capable of 140m at 5.5\" face sampling hammer; diamond rig with HQ3/NQ3 triple tube capability. Client to provide on-site geologist; contractor to supply drillers, offsiders, and field supervisor. All RC chips logged at 1m intervals and bagged. Core to be oriented, boxed, and photographed on-site. Water supply and management plan required. Indigenous Land Use Agreement (ILUA) conditions apply — Heritage monitor required during drilling.
-KEY RISKS NOTED IN RFP: Hard BIF and chert formation below 60m; remote site access (120km unsealed), accommodation and camp logistics for 12 personnel; potential wet season extension; downhole deviation risk in steeply dipping mineralisation.`;
+const SAMPLE_RFP = `CLIENT: TC Energy Corporation
+PROJECT: NGTL System Loop — Geotechnical & Environmental Drilling Investigation
+LOCATION: Central Saskatchewan, Canada (near Lloydminster, SK/AB border region)
+SCOPE: Drilling contractor required for a combined geotechnical and environmental investigation along a proposed 62km pipeline corridor. Scope includes: 36 geotechnical boreholes (avg 12m depth, continuous SPT testing and soil sampling), 14 monitoring well installations (2" PVC casing, bentonite seal), and 8 soil vapour survey holes to 6m depth. Contractor to provide field technician for logging and sampling. Lab testing (Atterberg limits, grain size, consolidation) to be subcontracted.
+DURATION: 8 weeks (mobilisation August 2025)
+SUBMISSION DEADLINE: 15 July 2025
+SPECIAL REQUIREMENTS: Rig capable of hollow stem auger (HSA) and mud rotary methods; licensed water well/borehole driller (Saskatchewan) required. All work compliant with Saskatchewan Environmental Management and Protection Act and the Pipeline Act. H2S Alive certification mandatory — active oilfield area. Contractor to supply all borehole abandonment materials. Traffic control plan required for highway right-of-way crossings (Hwy 16 and Hwy 40). Spill response plan to be submitted prior to mobilisation.
+KEY RISKS NOTED IN RFP: Glacial till with cobbles above 8m slowing production; artesian groundwater conditions in sand aquifer at 10-18m (potential well control risk); buried oilfield infrastructure conflicts along corridor; potential hydrocarbon-impacted soil discovery triggering Phase 2 ESA escalation; early-season frost and site access on agricultural land (landowner agreements in progress).`;
 
 let briefContent = '';
 let questionsData = [];
@@ -320,6 +320,7 @@ const CAT_COLORS = {
   'Schedule & Mobilisation': 'badge-sched',
   'Formation & Ground Conditions': 'badge-risk',
   'Fluids & Consumables': 'badge-ops',
+  'Health Safety & Environment': 'badge-risk',
   'Subcontractors & Suppliers': 'badge-ops',
   'Risks & Assumptions': 'badge-risk',
   'Margin & Commercials': 'badge-risk',

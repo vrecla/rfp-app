@@ -22,14 +22,20 @@ def generate_brief():
         return jsonify({"error": "No RFP text provided"}), 400
 
     system = (
-        "You are a senior drilling estimator at Forged Drilling. Extract key information from RFPs "
-        "and produce concise internal job briefs tailored to a drilling contractor. "
-        "Focus on rig requirements, metreage, hole specifications, formation context, and commercial terms. "
+        "You are a senior drilling estimator at Forged Drill Co., a North American drilling contractor "
+        "headquartered in Pilot Butte, Saskatchewan, with offices in San Antonio TX and Denver CO. "
+        "Forged Drill Co. offers: Environmental Drilling, Resource Coring, Hydrogeological Drilling, "
+        "Geotechnical Drilling, Geothermal Drilling, Oil Sands, Pipeline Services, and Dewatering Systems. "
+        "Extract key information from RFPs and produce concise internal job briefs. "
+        "Identify the applicable drilling discipline(s) and focus on rig requirements, metreage, "
+        "hole specifications, formation context, safety requirements, and commercial terms. "
         "Be factual and structured. Use plain text only, no markdown symbols."
     )
-    prompt = f"""From this RFP, produce a structured internal job brief for Forged Drilling with these sections:
-PROJECT OVERVIEW, CLIENT, LOCATION, SCOPE SUMMARY, RIG REQUIREMENTS, KEY QUANTITIES (metres drilled / hole count / diameters / depths),
-DURATION & PROGRAMME, SUBMISSION DEADLINE, MOBILISATION REQUIREMENTS, SPECIAL REQUIREMENTS, KNOWN RISKS & HAZARDS, and INITIAL OBSERVATIONS.
+    prompt = f"""From this RFP, produce a structured internal job brief for Forged Drill Co. with these sections:
+PROJECT OVERVIEW, CLIENT, LOCATION, DRILLING DISCIPLINE (which Forged service applies), SCOPE SUMMARY,
+RIG REQUIREMENTS, KEY QUANTITIES (metres / hole count / diameters / depths), DURATION & PROGRAMME,
+SUBMISSION DEADLINE, MOBILISATION REQUIREMENTS, SAFETY & REGULATORY REQUIREMENTS, SPECIAL REQUIREMENTS,
+KNOWN RISKS & HAZARDS, and INITIAL OBSERVATIONS.
 
 RFP:
 {rfp_text}"""
@@ -56,15 +62,19 @@ def generate_questions():
         return jsonify({"error": "No brief provided"}), 400
 
     system = (
-        "You are a drilling operations manager at Forged Drilling. Generate targeted questions for "
-        "the operations team to answer so the estimator can build a cost and proposal. "
-        "Questions must be specific to drilling — rigs, crew, production rates, formation, fluids, mobilisation. "
+        "You are a drilling operations manager at Forged Drill Co., a North American drilling contractor "
+        "offering Environmental Drilling, Resource Coring, Hydrogeological Drilling, Geotechnical Drilling, "
+        "Geothermal Drilling, Oil Sands, Pipeline Services, and Dewatering Systems. "
+        "Generate targeted questions for the operations team to answer so the estimator can build a cost and proposal. "
+        "Tailor questions to the specific drilling discipline identified in the brief. "
+        "Always include safety and HSE compliance questions — safety is Forged Drill Co.'s core value. "
         "Return ONLY a JSON array, no markdown, no preamble. "
         'Each item: {"id":"q1","category":"Crew & Personnel","question":"Full question text",'
         '"hint":"Brief guidance for ops","type":"text"}. '
         "Categories: Crew & Personnel, Rig Selection & Equipment, Drilling Programme, "
         "Production Rates, Schedule & Mobilisation, Formation & Ground Conditions, "
-        "Fluids & Consumables, Subcontractors & Suppliers, Risks & Assumptions, Margin & Commercials."
+        "Fluids & Consumables, Health Safety & Environment, Subcontractors & Suppliers, "
+        "Risks & Assumptions, Margin & Commercials."
     )
     prompt = f"Based on this drilling job brief, generate 14-18 targeted operations questions for estimating:\n\n{brief}"
 
@@ -104,13 +114,16 @@ def generate_estimate():
     )
 
     system = (
-        "You are a senior drilling estimator at Forged Drilling. Produce a structured cost estimate and proposal outline "
-        "in plain text only — no markdown symbols, just clear section headings in CAPS. "
-        "Use drilling industry terminology: metres drilled, daily drilling rate, rig day rate, mobilisation costs, "
-        "consumables (bits, rods, fluids), casing, and downhole tooling. "
+        "You are a senior drilling estimator at Forged Drill Co., a North American drilling contractor "
+        "offering Environmental Drilling, Resource Coring, Hydrogeological Drilling, Geotechnical Drilling, "
+        "Geothermal Drilling, Oil Sands, Pipeline Services, and Dewatering Systems. "
+        "Produce a structured cost estimate and proposal outline in plain text only — "
+        "no markdown symbols, just clear section headings in CAPS. "
+        "Use drilling industry terminology appropriate to the discipline. "
+        "Always include a safety and compliance cost line — safety is Forged Drill Co.'s core value ('Forged in Safety'). "
         "Be specific with numbers where ops data allows; flag gaps clearly."
     )
-    prompt = f"""Using this job brief and operations team input, produce a draft drilling estimate and proposal outline for Forged Drilling.
+    prompt = f"""Using this job brief and operations team input, produce a draft drilling estimate and proposal outline for Forged Drill Co.
 
 JOB BRIEF:
 {brief}
@@ -120,11 +133,13 @@ OPERATIONS TEAM INPUT:
 
 Structure your output with these sections:
 SCOPE SUMMARY
+DRILLING DISCIPLINE & APPLICABLE SERVICES
 CREW & PERSONNEL ESTIMATE
 RIG & EQUIPMENT COSTS
 DRILLING PRODUCTION ASSUMPTIONS
 FLUIDS & CONSUMABLES ESTIMATE
 MOBILISATION & DEMOBILISATION
+HEALTH SAFETY & ENVIRONMENT (HSE) COSTS
 PROGRAMME SUMMARY
 SUBCONTRACTOR & SPECIALIST ALLOWANCES
 RISK ALLOWANCES & CONTINGENCY
