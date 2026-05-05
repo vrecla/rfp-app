@@ -1,7 +1,9 @@
 import os
 import json
+import io
 from flask import Flask, render_template, request, jsonify, stream_with_context, Response
 import anthropic
+import pdfplumber
 
 app = Flask(__name__)
 
@@ -12,6 +14,28 @@ MODEL = "claude-sonnet-4-6"
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/api/parse-pdf", methods=["POST"])
+def parse_pdf():
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    f = request.files["file"]
+    if not f.filename.lower().endswith(".pdf"):
+        return jsonify({"error": "File must be a PDF"}), 400
+    try:
+        pages = []
+        with pdfplumber.open(io.BytesIO(f.read())) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text()
+                if text:
+                    pages.append(text.strip())
+        extracted = "\n\n".join(pages)
+        if not extracted.strip():
+            return jsonify({"error": "Could not extract text from this PDF. Try copying the text manually."}), 422
+        return jsonify({"text": extracted})
+    except Exception as e:
+        return jsonify({"error": f"PDF parsing failed: {e}"}), 500
 
 
 @app.route("/api/generate-brief", methods=["POST"])
