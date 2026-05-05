@@ -412,14 +412,15 @@ async function loadOpsQuestions() {
       body: JSON.stringify({ brief: briefContent }),
     });
     const data = await res.json();
-    if (data.error) throw new Error(data.error);
+    if (data.error) { const err = new Error(data.error); err.raw = data.raw || ''; throw err; }
     questionsData = data.questions;
     renderQuestions();
     document.getElementById('ops-loading').style.display = 'none';
     document.getElementById('ops-questions').style.display = 'block';
   } catch (e) {
     document.getElementById('ops-loading').style.display = 'none';
-    document.getElementById('ops-questions').innerHTML = `<p style="color:#c00;padding:1rem;">Error: ${e.message}</p>`;
+    const rawDetail = e.raw ? `\n\nAI response preview:\n${e.raw}` : '';
+    document.getElementById('ops-questions').innerHTML = `<p style="color:#c00;padding:1rem;white-space:pre-wrap;">Error: ${e.message}${rawDetail}</p>`;
     document.getElementById('ops-questions').style.display = 'block';
   }
 }

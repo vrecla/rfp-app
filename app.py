@@ -71,19 +71,19 @@ def generate_questions():
     try:
         response = client.messages.create(
             model=MODEL,
-            max_tokens=1500,
+            max_tokens=2500,
             system=system,
             messages=[{"role": "user", "content": prompt}],
         )
-        raw = response.content[0].text
+        raw = response.content[0].text.strip()
         start = raw.find('[')
         end = raw.rfind(']')
         if start == -1 or end == -1:
-            return jsonify({"error": "No JSON array found in AI response", "raw": raw[:500]}), 500
+            return jsonify({"error": "No JSON array found in AI response", "raw": raw[:1000]}), 500
         questions = json.loads(raw[start:end + 1])
         return jsonify({"questions": questions})
     except json.JSONDecodeError as e:
-        return jsonify({"error": f"Failed to parse questions: {e}", "raw": raw[:500]}), 500
+        return jsonify({"error": f"Failed to parse questions: {e}", "raw": raw[:1000]}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
