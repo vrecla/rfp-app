@@ -10,7 +10,7 @@ Built with Python/Flask + Anthropic Claude API.
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/rfp-tender-app.git
+git clone https://github.com/vrecla/rfp-tender-app.git
 cd rfp-tender-app
 
 # 2. Create virtual environment
